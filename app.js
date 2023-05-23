@@ -2,13 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const process = require('process');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
 const NotFoundErr = require('./errors/notFoundErr');
 const handleErrors = require('./middlewares/handleErrors');
 const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes/index');
+const { MONGO_DB_ADDRESS, PORT_NUMBER } = require('./utils/constants');
 
-const { PORT = 3000 } = process.env;
+const { PORT = PORT_NUMBER } = process.env;
 const app = express();
 
 app.use(express.json());
@@ -18,7 +20,7 @@ process.on('uncaughtException', (err) => {
   console.log(err);
 });
 mongoose.connect(
-  'mongodb://127.0.0.1:27017/bitfilmsdb',
+  MONGO_DB_ADDRESS,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -28,6 +30,8 @@ mongoose.connect(
   .catch((err) => console.log(err));
 
 app.use(requestLogger);
+
+app.use(helmet());
 
 app.use(routes);
 
