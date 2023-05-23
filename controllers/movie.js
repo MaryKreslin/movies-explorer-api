@@ -25,7 +25,7 @@ module.exports.createMovie = async (req, res, next) => {
     nameRU,
     nameEN,
     thumbnail,
-    movieId,
+    movieNumber,
   } = req.body;
   const owner = req.user._id;
   try {
@@ -40,7 +40,7 @@ module.exports.createMovie = async (req, res, next) => {
       nameRU,
       nameEN,
       thumbnail,
-      movieId,
+      movieNumber,
       owner,
     });
     res.status(201).send({ data: movie });
