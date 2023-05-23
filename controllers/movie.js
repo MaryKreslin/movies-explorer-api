@@ -13,7 +13,7 @@ module.exports.getMovies = (req, res, next) => {
     });
 };
 
-module.exports.createMovie = (req, res, next) => {
+module.exports.createMovie = async (req, res, next) => {
   const {
     country,
     director,
@@ -27,30 +27,30 @@ module.exports.createMovie = (req, res, next) => {
     thumbnail,
     movieId,
   } = req.body;
-  Movie.create({
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    nameRU,
-    nameEN,
-    thumbnail,
-    movieId,
-    owner: req.user._id,
-  })
-    .then((movie) => {
-      res.status(201).send({ data: movie });
-    })
-    .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        next(new ValidationErr('Переданы некорректные данные'));
-      } else {
-        next(error);
-      }
+  const owner = req.user._id;
+  try {
+    const movie = await Movie.create({
+      country,
+      director,
+      duration,
+      year,
+      description,
+      image,
+      trailerLink,
+      nameRU,
+      nameEN,
+      thumbnail,
+      movieId,
+      owner,
     });
+    res.status(201).send({ data: movie });
+  } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      next(new ValidationErr('Переданы некорректные данные'));
+    } else {
+      next(error);
+    }
+  }
 };
 
 module.exports.deleteMovieOnId = (req, res, next) => {
