@@ -14,35 +14,9 @@ module.exports.getMovies = (req, res, next) => {
 };
 
 module.exports.createMovie = async (req, res, next) => {
-  const {
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    nameRU,
-    nameEN,
-    thumbnail,
-    movieNumber,
-  } = req.body;
   const owner = req.user._id;
   try {
-    const movie = await Movie.create({
-      country,
-      director,
-      duration,
-      year,
-      description,
-      image,
-      trailerLink,
-      nameRU,
-      nameEN,
-      thumbnail,
-      movieNumber,
-      owner,
-    });
+    const movie = await Movie.create({ owner, ...req.body });
     res.status(201).send({ data: movie });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {

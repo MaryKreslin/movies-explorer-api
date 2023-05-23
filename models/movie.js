@@ -46,7 +46,7 @@ const movieSchema = new mongoose.Schema({
       message: 'Некорректный адрес URL',
     },
   },
-  movieNumber: {
+  movieId: {
     type: Number,
     required: true,
   },
