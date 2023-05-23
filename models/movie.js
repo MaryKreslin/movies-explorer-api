@@ -46,11 +46,6 @@ const movieSchema = new mongoose.Schema({
       message: 'Некорректный адрес URL',
     },
   },
-  owner: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'user',
-    required: true,
-  },
   movieId: {
     type: Number,
     required: true,
@@ -61,6 +56,11 @@ const movieSchema = new mongoose.Schema({
   },
   nameEN: {
     type: String,
+    required: true,
+  },
+  owner: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'user',
     required: true,
   },
 });
