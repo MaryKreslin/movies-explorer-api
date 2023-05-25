@@ -7,9 +7,9 @@ const handleErrors = require('./middlewares/handleErrors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { limit } = require('./middlewares/rateLimiter');
 const routes = require('./routes/index');
-const { PORT_NUMBER } = require('./utils/constants');
+const { PORT_NUMBER, MONGO_DB_ADRESS } = require('./utils/constants');
 
-const { PORT = PORT_NUMBER, MONGO_DB_ADDRESS } = process.env;
+const { PORT = PORT_NUMBER, DB_ADDRESS, NODE_ENV } = process.env;
 const app = express();
 
 app.use(express.json());
@@ -19,7 +19,7 @@ process.on('uncaughtException', (err) => {
   console.log(err);
 });
 mongoose.connect(
-  MONGO_DB_ADDRESS,
+  ((NODE_ENV !== 'production') ? MONGO_DB_ADRESS : DB_ADDRESS),
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

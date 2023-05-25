@@ -10,9 +10,10 @@ const {
   NOT_FOUND_ERROR_MESSAGE,
   VALIDATION_ERROR__MESSAGE,
   CONFLICT_ERROR_MESSAGE,
+  DEV_JWT_KEY,
 } = require('../utils/constants');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -20,7 +21,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        JWT_SECRET,
+        NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_KEY,
         { expiresIn: '7d' },
       );
       res.send({ token });
