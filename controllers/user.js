@@ -6,8 +6,13 @@ const User = require('../models/user');
 const ValidationErr = require('../errors/validationErr');
 const NotFoundErr = require('../errors/notFoundErr');
 const ConflictErr = require('../errors/conflictErr');
+const {
+  NOT_FOUND_ERROR_MESSAGE,
+  VALIDATION_ERROR__MESSAGE,
+  CONFLICT_ERROR_MESSAGE,
+} = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -15,7 +20,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'super-secret-key',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
       res.send({ token });
@@ -27,7 +32,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundErr('Пользователь не найден');
+        throw new NotFoundErr(NOT_FOUND_ERROR_MESSAGE);
       }
       res.send({
         data: {
@@ -39,7 +44,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.CastError) {
-        next(new ValidationErr('Переданы некорректные данные'));
+        next(new ValidationErr(VALIDATION_ERROR__MESSAGE));
       } else {
         next(error);
       }
@@ -66,9 +71,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((error) => {
       if (error.code === 11000) {
-        next(new ConflictErr('Пользователь уже существует!'));
+        next(new ConflictErr(CONFLICT_ERROR_MESSAGE));
       } else if (error instanceof mongoose.Error.ValidationError) {
-        next(new ValidationErr('Переданы некорректные данные'));
+        next(new ValidationErr(VALIDATION_ERROR__MESSAGE));
       } else {
         next(error);
       }
@@ -83,13 +88,15 @@ module.exports.patchUser = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundErr('Пользователь не найден');
+        throw new NotFoundErr(NOT_FOUND_ERROR_MESSAGE);
       }
       res.send({ data: user });
     })
     .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        next(new ValidationErr('Переданы некорректные данные'));
+      if (error.code === 11000) {
+        next(new ConflictErr(CONFLICT_ERROR_MESSAGE));
+      } else if (error instanceof mongoose.Error.ValidationError) {
+        next(new ValidationErr(VALIDATION_ERROR__MESSAGE));
       } else {
         next(error);
       }

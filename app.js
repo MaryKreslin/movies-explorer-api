@@ -3,14 +3,13 @@ const mongoose = require('mongoose');
 const process = require('process');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
-const NotFoundErr = require('./errors/notFoundErr');
 const handleErrors = require('./middlewares/handleErrors');
-const { auth } = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { limit } = require('./middlewares/rateLimiter');
 const routes = require('./routes/index');
-const { MONGO_DB_ADDRESS, PORT_NUMBER } = require('./utils/constants');
+const { PORT_NUMBER } = require('./utils/constants');
 
-const { PORT = PORT_NUMBER } = process.env;
+const { PORT = PORT_NUMBER, MONGO_DB_ADDRESS } = process.env;
 const app = express();
 
 app.use(express.json());
@@ -31,20 +30,18 @@ mongoose.connect(
 
 app.use(requestLogger);
 
+app.use(limit);
+
 app.use(helmet());
 
 app.use(routes);
-
-app.use('*', auth, (req, res, next) => {
-  const err = new NotFoundErr('Страница не найдена');
-  next(err);
-});
 
 app.use(errorLogger);
 
 app.use(errors());
 
 app.use(handleErrors);
+
 app.listen(PORT, (err) => {
   if (err) {
     console.log('Error while starting server');
