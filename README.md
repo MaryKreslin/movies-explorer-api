@@ -7,7 +7,7 @@ Backend часть дипломного проекта на ЯндексПрак
 
 **адрес домена сервера:**
 
-IP 51.250.8.87
+IP 158.160.58.234
 
 `https://api.movies.kreslin.nomoredomains.monster`
 
