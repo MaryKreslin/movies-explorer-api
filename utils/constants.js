@@ -13,6 +13,7 @@ const FORBIDDEN_DELETE_MESSAGE = 'Нет доступа к удалению фи
 const NOT_FOUND_ERROR_MESSAGE = 'Запрашиваемый ресурс не найден';
 const UNAUTORIZED_ERROR_MESSAGE = 'Необходима авторизация';
 const CONFLICT_ERROR_MESSAGE = 'Пользователь уже существует!';
+const UNATHORIZES_WRONG_EMAIL_PASSWORD_MESSAGE = 'Неправильная почта или пароль!';
 
 const REQUEST_LOG_FILENAME = 'request.log';
 const ERROR_LOG_FILENAME = 'error.log';
@@ -23,6 +24,7 @@ module.exports = {
   PORT_NUMBER,
   MONGO_DB_ADRESS,
   DEV_JWT_KEY,
+  UNATHORIZES_WRONG_EMAIL_PASSWORD_MESSAGE,
   INTERNAL_SERVER_ERROR_MESSAGE,
   BAD_URL_MESSAGE,
   NOT_FOUND_MESSAGE,
