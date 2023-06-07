@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const process = require('process');
 const { errors } = require('celebrate');
@@ -11,6 +12,21 @@ const { PORT_NUMBER, MONGO_DB_ADRESS } = require('./utils/constants');
 
 const { PORT = PORT_NUMBER, DB_ADDRESS, NODE_ENV } = process.env;
 const app = express();
+
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://api.movies.kreslin.nomoredomains.monster',
+    'http://api.movies.kreslin.nomoredomains.monster',
+    'https://movies.kreslin.nomoredomains.monster',
+    'http://movies.kreslin.nomoredomains.monster'
+  ],
+  methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +47,7 @@ mongoose.connect(
 app.use(requestLogger);
 
 app.use(limit);
-
+app.use('*', cors(options));
 app.use(helmet());
 
 app.use(routes);
