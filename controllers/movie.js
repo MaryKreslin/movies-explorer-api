@@ -40,7 +40,7 @@ module.exports.deleteMovieOnId = (req, res, next) => {
       } else if (JSON.stringify(movie.owner) !== JSON.stringify(req.user._id)) {
         throw new ForbiddenErr(FORBIDDEN_DELETE_MESSAGE);
       } else {
-        movie.deleteOne()
+        Movie.deleteOne({ _id: req.params.id }, { new: true })
           .then(() => {
             res.send({ message: 'Фильм удален' });
           })
