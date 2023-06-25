@@ -32,26 +32,26 @@ module.exports.createMovie = async (req, res, next) => {
   }
 };
 
-module.exports.deleteMovieOnId = (req, res, next) => {
-  Movie.findById(req.params.id)
-    .then((movie) => {
-      if (!movie) {
-        throw new NotFoundErr(NOT_FOUND_ERROR_MESSAGE);
-      } else if (JSON.stringify(movie.owner) !== JSON.stringify(req.user._id)) {
-        throw new ForbiddenErr(FORBIDDEN_DELETE_MESSAGE);
-      } else {
-        Movie.deleteOne({ _id: req.params.id }, { new: true })
-          .then(() => {
-            res.send({ message: 'Фильм удален' });
-          })
-          .catch(next);
-      }
-    })
-    .catch((error) => {
-      if (error instanceof mongoose.Error.CastError) {
-        next(new ValidationErr(VALIDATION_ERROR__MESSAGE));
-      } else {
-        next(error);
-      }
-    });
+module.exports.deleteMovieOnId = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const movie = await Movie.findById(id);
+    if (!movie) {
+      throw new NotFoundErr(NOT_FOUND_ERROR_MESSAGE);
+    }
+    if (JSON.stringify(movie.owner) !== JSON.stringify(req.user._id)) {
+      throw new ForbiddenErr(FORBIDDEN_DELETE_MESSAGE);
+    }
+    const isDelete = await Movie.findByIdAndDelete(id);
+    if (!isDelete) {
+      throw new NotFoundErr(NOT_FOUND_ERROR_MESSAGE);
+    }
+    res.send({ message: 'Фильм удален' });
+  } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      next(new ValidationErr(VALIDATION_ERROR__MESSAGE));
+    } else {
+      next(error);
+    }
+  }
 };
